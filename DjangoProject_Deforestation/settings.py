@@ -127,9 +127,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-# default value timezone : TIME_ZONE = 'UTC'
-TIME_ZONE = 'Africa/Antananarivo'
-
+# default value timezone :
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
