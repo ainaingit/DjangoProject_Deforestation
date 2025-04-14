@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche de lieu et carte</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Leaflet CSS pour la carte -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <style>
+        #map1, #map2 {
+            height: 400px; /* Taille des cartes */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <h1>Localiser un lieu par date</h1>
+
+    <!-- Formulaire de recherche avec deux dates -->
+    <form id="search-form" class="mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" class="form-control" id="search" placeholder="Entrez un lieu (ex: Amazonie)">
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" id="date1">
+            </div>
+            <div class="col-md-3">
+                <input type="date" class="form-control" id="date2">
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary mt-2" onclick="searchLocation()">Rechercher</button>
+    </form>
+
+    <div class="row">
+        <!-- Carte pour la première date -->
+        <div class="col-md-6">
+            <h3>Carte pour la Date 1</h3>
+            <div id="map1"></div>
+        </div>
+
+        <!-- Carte pour la deuxième date -->
+        <div class="col-md-6">
+            <h3>Carte pour la Date 2</h3>
+            <div id="map2"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts nécessaires pour Leaflet et Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    // Initialisation des cartes avec Leaflet
+    let map1 = L.map('map1').setView([0, 0], 2);  // Carte pour la première date
+    let map2 = L.map('map2').setView([0, 0], 2);  // Carte pour la deuxième date
+
+    // Ajouter les tuiles de la carte
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+    }).addTo(map1);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+    }).addTo(map2);
+
+    // Fonction de recherche pour la localisation
+    function searchLocation() {
+        const query = document.getElementById('search').value;
+        const date1 = document.getElementById('date1').value;
+        const date2 = document.getElementById('date2').value;
+
+        if (!query || !date1 || !date2) {
+            alert("Veuillez remplir tous les champs !");
+            return;
+        }
+
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    // Récupérer les coordonnées du lieu
+                    const lat = data[0].lat;
+                    const lon = data[0].lon;
+
+                    // Mettre à jour la vue et ajouter un marqueur sur la première carte
+                    map1.setView([lat, lon], 10);
+                    L.marker([lat, lon]).addTo(map1)
+                        .bindPopup(`Lieu: ${query} <br> Date 1: ${date1}`)
+                        .openPopup();
+
+                    // Mettre à jour la vue et ajouter un marqueur sur la deuxième carte
+                    map2.setView([lat, lon], 10);
+                    L.marker([lat, lon]).addTo(map2)
+                        .bindPopup(`Lieu: ${query} <br> Date 2: ${date2}`)
+                        .openPopup();
+                } else {
+                    alert("Lieu non trouvé !");
+                }
+            });
+    }
+</script>
+
+</body>
+</html>

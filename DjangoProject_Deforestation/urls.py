@@ -18,7 +18,9 @@ from django.contrib import admin
 # from django.contrib import admin
 from django.urls import path, include
 
+from mapsearch import views
+
 urlpatterns = [
-    path("polls/", include("polls.urls")),
     path('admin/', admin.site.urls),
+    path('', views.map_search, name='map_search'),
 ]
